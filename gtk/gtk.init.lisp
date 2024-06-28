@@ -49,10 +49,15 @@
 
   (defun ensure-gtk-main ()
     #+sbcl
-    (when (and (find-package "SB-EXT")
-               (find-symbol "SET-FLOATING-POINT-MODES" (find-package "SB-EXT")))
-      (funcall (find-symbol "SET-FLOATING-POINT-MODES" (find-package "SB-EXT"))
-               :traps nil))
+    (progn 
+      (when (and (find-package "SB-EXT")
+		 (find-symbol "SET-FLOATING-POINT-MODES" (find-package "SB-EXT")))
+	(funcall (find-symbol "SET-FLOATING-POINT-MODES" (find-package "SB-EXT"))
+		 :traps nil))
+      (when (and (find-package "SB-VM")
+		 (find-symbol "SET-FLOATING-POINT-MODES" (find-package "SB-VM")))
+	(funcall (find-symbol "SET-FLOATING-POINT-MODES" (find-package "SB-VM"))
+		 :traps nil)))
     (bt:with-lock-held (*main-thread-lock*)
       (when (and *main-thread* (not (bt:thread-alive-p *main-thread*)))
         (setf *main-thread* nil))
